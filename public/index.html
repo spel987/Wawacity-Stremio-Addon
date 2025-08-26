@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wawacity Addon - Stremio</title>
+    <meta property="og:title" content="Wawacity Addon - Stremio" />
+    <meta property="og:url" content="https://wawacity.diy" />
+    <meta property="og:description" content="Accès au contenu de Wawacity via Stremio & AllDebrid (non officiel)" />
+    <meta name="theme-color" content="#c87524">
+    <link rel="icon" href="/static/favicon.ico">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: "Space Grotesk", sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #0f0f0f 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(17, 17, 17, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            border: 2px solid #202020;
+            transition: all 0.3s ease;
+        }
+
+        .container:hover {
+            background: rgba(18, 18, 18, 0.95);
+        }
+        
+        .logo {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(45deg, #c87524 0%, #ebaa20 100%);
+            border-radius: 30%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            box-shadow: 0 10px 20px rgba(200, 117, 36, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: translateY(-2px);
+        }
+
+        .logo-img {
+            width: 95%;
+            height: 95%;
+            object-fit: cover;
+            border-radius: 30%;
+        }
+        
+        h1 {
+            color: #f1f1f1;
+            margin-bottom: 20px;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: #cecece;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .header {
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        
+        label {
+            display: block;
+            color: #cecece;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        input {
+            color: #f1f1f1;
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #686868;
+            border-radius: 10px;
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #070707;
+        }
+        
+        input:hover {
+            outline: none;
+            border-color: #c87524;
+            box-shadow: 0 0 0 5px rgba(200, 117, 36, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #ebaa20;
+        }
+        
+        button {
+            background: linear-gradient(0deg, #c87524 0%, #ebaa20 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            font-family: "Space Grotesk", sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        button:hover {
+            box-shadow: 0 0 0 7px rgba(200, 117, 36, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+            border-radius: 10px;
+            border-left: 4px solid #48bb78;
+            text-align: left;
+            display: none;
+            transition: all 0.3s ease;
+        }
+        
+        .result h3 {
+            color: #38a169;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .result-link {
+            background: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            word-break: break-all;
+            font-size: 14px;
+            margin-bottom: 15px;
+            color: #2d3748;
+        }
+        
+        .copy-btn {
+            background: linear-gradient(0deg, #48bb78 0%, #50cf85 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: auto;
+            margin: 5px;
+        }
+        
+        .copy-btn:hover {
+            box-shadow: 0 0 0 5px rgba(72, 187, 119, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+        
+        .info {
+            background: #e6f3ff;
+            border-left: 4px solid #3182ce;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: left;
+            transition: all 0.3s ease;
+        }
+
+        .info:hover {
+            box-shadow: 0 0 0 7px rgba(49, 130, 206, 0.1);
+        }
+        
+        .info h4 {
+            color: #2c5282;
+            margin-bottom: 8px;
+        }
+        
+        .info p {
+            color: #2d3748;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .info a {
+            color: #3182ce;
+            text-decoration: none;
+        }
+        
+        .info a:hover {
+            text-decoration: underline;
+        }
+
+        a {
+            color: #c87524;
+            text-decoration: underline;
+            transition: all 0.3s ease;
+        }
+
+        a:hover {
+            color: #ebaa20;
+            transform: translateY(-1px);
+        }
+
+        .github {
+            font-size: 18px;
+        }
+
+
+        @media screen and (max-width: 1200px) {
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img class="logo-img" src="/static/wawacity_icon.png" alt="Wawacity Addon">
+        </div>
+
+        <div class="header">
+            <h1>Wawacity Addon</h1>
+            <p class="subtitle">Accès au contenu de <a href="https://wawacity.diy" target="_blank">Wawacity</a> via <a href="https://stremio.com" target="_blank">Stremio</a> & <a href="https://alldebrid.com" target="_blank">AllDebrid</a><br><strong>(non officiel)</strong></p>
+            <a class="github" href="https://github.com/spel987/Wawacity_Stremio" target="_blank">GitHub repository</a>
+        </div>
+        
+        <div class="form-group">
+            <label for="alldebrid">Clé API AllDebrid</label>
+            <input type="text" id="alldebrid" placeholder="Clé API AllDebrid">
+        </div>
+        
+        <div class="form-group">
+            <label for="tmdb">Jeton d'accès API TMDB</label>
+            <input type="text" id="tmdb" placeholder="Jeton d'accès API TMDB">
+        </div>
+        
+        <button onclick="generateLink()">Générer le lien addon</button>
+        
+        <div id="result" class="result">
+            <h3>🎉 Addon configuré avec succès!</h3>
+            <div class="result-link" id="addonLink"></div>
+            <button class="copy-btn" onclick="copyToClipboard('addonLink')">📋 Copier le lien</button>
+            <button class="copy-btn" onclick="openInStremio()">🚀 Ouvrir dans Stremio</button>
+        </div>
+        
+        <div class="info">
+            <h4>ℹ️ Comment obtenir les clés API ?</h4>
+            <p><strong>AllDebrid (payant) :</strong> Connectez-vous sur <a href="https://alldebrid.com/apikeys" target="_blank">alldebrid.com/apikeys</a></p>
+            <p><strong>TMDB (gratuit) :</strong> Connectez-vous sur <a href="https://www.themoviedb.org/settings/api" target="_blank">themoviedb.org/settings/api</a></p>
+        </div>
+    </div>
+    
+    <script>
+        function generateLink() {
+            const alldebrid = document.getElementById('alldebrid').value.trim();
+            const tmdb = document.getElementById('tmdb').value.trim();
+            
+            if (!alldebrid || !tmdb) {
+                alert('Veuillez remplir les deux champs API');
+                return;
+            }
+            
+            const config = `alldebrid=${encodeURIComponent(alldebrid)}|tmdb=${encodeURIComponent(tmdb)}`;
+            const addonUrl = `${window.location.origin}/${config}/manifest.json`;
+            
+            document.getElementById('addonLink').textContent = addonUrl;
+            document.getElementById('result').style.display = 'block';
+            
+            document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function copyToClipboard(elementId) {
+            const text = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✅ Copié !';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            });
+        }
+        
+        function openInStremio() {
+            const addonUrl = document.getElementById('addonLink').textContent;
+            const stremioUrl = `stremio://${addonUrl}`;
+            window.open(stremioUrl, '_blank');
+        }
+        
+        // Auto-focus on first input
+        document.getElementById('alldebrid').focus();
+        
+        // Enter key support
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                generateLink();
+            }
+        });
+    </script>
+</body>
+</html>
