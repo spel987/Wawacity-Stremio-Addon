@@ -1,0 +1,11 @@
+services:
+  wawacity-addon:
+    image: ghcr.io/spel987/wawacity-stremio-addon:latest
+    container_name: wawacity-stremio-addon
+    ports:
+      - "7000:7000"
+    environment:
+      - WAWACITY_URL=https://wawacity.diy
+      - PORT=7000
+      - ADDON_BASE_URL=http://localhost:7000
+    restart: unless-stopped
