@@ -15,8 +15,14 @@ from base64 import b64decode
 from os import environ
 
 WAWACITY_URL = environ.get("WAWACITY_URL", "https://wawacity.diy")
+PROXY_URL = environ.get("PROXY_URL")
 
 requests_session = Session()
+if PROXY_URL:
+    requests_session.proxies = {
+        "http": PROXY_URL,
+        "https": PROXY_URL
+    }
 
 class UnsuccessfulSearch(Exception):
     """Unsuccessful search on the source."""
@@ -65,7 +71,7 @@ def normalize_string(string: str):
     return normalize('NFKD', str(string)).encode('ascii', 'ignore').decode('ascii')
 
 def remove_unwanted_characters(string: str):
-    return sub("\s+", " ", string.translate(str.maketrans({'-': ' ', ':': '', '–': ' ', '—': ' ', '−': ' '})))
+    return sub(r"\s+", " ", string.translate(str.maketrans({'-': ' ', ':': '', '–': ' ', '—': ' ', '−': ' '})))
 
 def compare_titles(title_1: str, title_2: str):
     return normalize_string(title_1.casefold()) in normalize_string(title_2.casefold())
@@ -261,18 +267,6 @@ def normalize_title(title: str) -> str:
     title = sub(r'\s+', ' ', title)
     title = title.strip()
     return title
-
-def fuzzy_match(search_title: str, db_title: str, threshold: float = 0.8) -> bool:
-    search_words = set(search_title.split())
-    db_words = set(db_title.split())
-    
-    if not search_words:
-        return False
-    
-    common_words = search_words.intersection(db_words)
-    ratio = len(common_words) / len(search_words)
-    
-    return ratio >= threshold
 
 def main():
     parser = ArgumentParser(description="Search for films on Wawacity")
