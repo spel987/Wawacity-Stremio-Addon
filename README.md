@@ -25,7 +25,6 @@ services:
     environment:
       - WAWACITY_URL=https://wawacity.diy
       - PORT=7000
-      - ADDON_BASE_URL=http://localhost:7000
     restart: unless-stopped
 ```
 
@@ -79,8 +78,8 @@ python Wawacity_AD.py
 
 ## 🛠️ Comment ça marche
 
-- Stremio appelle `/{config}/stream/{type}/{imdb_id}.json`.
-	- `config`: clé API AllDebrid & TMDB
+- Stremio appelle `/{b64config}/stream/{type}/{imdb_id}.json`.
+	- `b64config`: clé API AllDebrid & TMDB
 	- `type`: movie
 	- `imdb_id`: identifiant IMDB
 - L'addon récupère le `title` et `year` via TMDB et `imdb_id`.
@@ -114,7 +113,7 @@ python Wawacity_AD.py
 ```
 
 - Pour chaque résultat, l'addon crée une source Stremio
-- Si une source est choisie, Stremio appelle `/resolve?link={DL_PROTECT_LINK}&apikey={ALLDEBRID_API_KEY}` qui retourne un lien direct AllDebrid streamable dans l'application.
+- Si une source est choisie, Stremio appelle `/resolve?link={DL_PROTECT_LINK}&b64config={BASE64_CONFIG}` qui retourne un lien direct AllDebrid streamable dans l'application.
 
 ## 🐛 Debug
 - Test recherche: `http://localhost:7000/debug/test-search?title={TITLE}&year={YEAR}`

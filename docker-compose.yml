@@ -7,5 +7,4 @@ services:
     environment:
       - WAWACITY_URL=https://wawacity.diy
       - PORT=7000
-      - ADDON_BASE_URL=http://localhost:7000
     restart: unless-stopped

@@ -2,5 +2,5 @@ fastapi==0.111.0
 uvicorn[standard]==0.30.1
 requests==2.32.3
 selectolax==0.3.21
-httpx==0.24.1
+httpx[socks]==0.27.2
 python-dotenv==1.0.0
