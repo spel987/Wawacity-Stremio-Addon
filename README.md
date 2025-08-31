@@ -123,3 +123,11 @@ python Wawacity_AD.py
 ## ⚠️ Disclaimer
 
 Cet addon fait simplement l'intermédiaire entre un site web (Wawacity) et l'utilisateur via Stremio. Il ne stocke ni ne distribue aucun contenu. Le développeur n'approuve ni ne promeut l'accès à des contenus protégés par des droits d'auteur. Les utilisateurs sont seuls responsables du respect de toutes les lois applicables.
+
+## 👤 Contributeurs
+
+Merci à toutes les personnes contribuant à ce projet!
+
+<a href="https://github.com/spel987/Wawacity-Stremio-Addon/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=spel987/Wawacity-Stremio-Addon" />
+</a>
