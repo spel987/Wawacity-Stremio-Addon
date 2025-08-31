@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 from argparse import ArgumentParser
 from sys import exit, stderr
 from re import sub, findall, search
@@ -5,14 +8,13 @@ from typing import Optional
 from requests import Session
 from selectolax.parser import HTMLParser, Node
 from unicodedata import normalize
-from json import dumps, load
+from json import dumps
 from urllib.parse import quote_plus, urlparse, parse_qs, unquote
 from base64 import b64decode
 
-with open("config.json", "r", encoding="utf-8") as f:
-    config_data = load(f)
+from os import environ
 
-WAWACITY_URL = config_data["WAWACITY_URL"]
+WAWACITY_URL = environ.get("WAWACITY_URL", "https://wawacity.diy")
 
 requests_session = Session()
 

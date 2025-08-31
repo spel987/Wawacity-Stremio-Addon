@@ -6,26 +6,74 @@ Addon Stremio qui cherche sur Wawacity, convertit en liens directs via AllDebrid
 
 ## 🗒️ Prérequis
 
-- Python: https://www.python.org/downloads/
-- Requirements: 
-```
-pip install -r requirements.txt
-```
 - Une clé API AllDebrid (⚠️ nécessité d'un compte **payant**): https://alldebrid.com/apikeys
 - Un jeton d'accès API TMDB (**compte obligatoire**): https://www.themoviedb.org/settings/api
 
-## ⚙️ Configuration
+## 🚀 Installation et lancement
 
-- Ouvrez le fichier `config.json` et mettez à jour l'URL permettant d'accéder à Wawacity si nécessaire, ainsi que le port du serveur web si besoin.
-  - Si vous ne pouvez vous rendre sur le site de Wawacity via leur URL, [changez vos paramètres DNS](https://one.one.one.one/fr-FR/dns/).
-- Démarrez l'addon:
+## Option 1: Docker (recommandé)
 
+### Étape 1: Créer un fichier docker-compose.yml
+
+```yaml
+services:
+  wawacity-addon:
+    image: ghcr.io/spel987/wawacity-stremio-addon:latest
+    container_name: wawacity-stremio-addon
+    ports:
+      - "7000:7000"
+    environment:
+      - WAWACITY_URL=https://wawacity.diy
+      - PORT=7000
+      - ADDON_BASE_URL=http://localhost:7000
+    restart: unless-stopped
 ```
+
+### Étape 2: Démarrer le conteneur
+
+```bash
+docker-compose up -d
+```
+
+### Étape 3: Vérifiez les logs
+
+```bash
+docker-compose logs -f
+```
+
+### Étape 4: Configuration
+
+- Accédez à `http://localhost:7000` dans votre navigateur
+- Renseignez votre clé API AllDebrid et votre jeton d'accès API TMDB
+- **Si problème d'accès à Wawacity :** [Changez vos paramètres DNS](https://one.one.one.one/fr-FR/dns/) ou modifiez `WAWACITY_URL` dans le docker-compose.yml
+
+---
+
+## Option 2: Installation manuelle
+
+### Étape 1: Télécharger le code
+
+Téléchargez la dernière version depuis GitHub : [**Download ZIP**](https://github.com/spel987/Wawacity-Stremio-Addon/archive/refs/heads/main.zip)
+
+Extraire le fichier ZIP et ouvrir le dossier dans un terminal
+
+### Étape 2: Installer les dépendances
+
+```bash
+pip install -r requirements.txt
+```
+
+### Étape 3: Lancer l'addon
+
+```bash
 python Wawacity_AD.py
 ```
 
-- Accédez à la configuration de l'addon via votre navigateur à l'adresse indiquée (de base `http://localhost:7000`).
-- Terminez la configuration en renseignant votre clé API AllDebrid ainsi que votre jeton d'accès API TMDB.
+### Étape 4: Configuration
+
+- Accédez à `http://localhost:7000` dans votre navigateur  
+- Renseignez votre clé API AllDebrid et votre jeton d'accès API TMDB
+- **Personnalisation :** Éditez le fichier `.env` pour modifier l'URL Wawacity ou le port si nécessaire
 
 <img src="https://i.imgur.com/54qqqVA.png">
 
