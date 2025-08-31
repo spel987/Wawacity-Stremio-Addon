@@ -304,8 +304,12 @@
                 return;
             }
             
-            const config = `alldebrid=${encodeURIComponent(alldebrid)}|tmdb=${encodeURIComponent(tmdb)}`;
-            const addonUrl = `${window.location.origin}/${config}/manifest.json`;
+            const config = {
+                alldebrid: alldebrid,
+                tmdb: tmdb
+            };
+            const configBase64 = btoa(JSON.stringify(config));
+            const addonUrl = `${window.location.protocol}//${window.location.host}/${configBase64}/manifest.json`;
             
             document.getElementById('addonLink').textContent = addonUrl;
             document.getElementById('result').style.display = 'block';
@@ -327,7 +331,8 @@
         
         function openInStremio() {
             const addonUrl = document.getElementById('addonLink').textContent;
-            const stremioUrl = `stremio://${addonUrl}`;
+            const urlWithoutProtocol = addonUrl.replace(/^https?:\/\//, '');
+            const stremioUrl = `stremio://${urlWithoutProtocol}`;
             window.open(stremioUrl, '_blank');
         }
         
