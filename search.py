@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 from argparse import ArgumentParser
 from sys import exit, stderr
 from re import sub, findall, search
