@@ -34,6 +34,7 @@ ADDON_MANIFEST = {
     "version": "1.1.0",
     "name": "Wawacity AD",
     "description": "Accès au contenu de Wawacity via Stremio & AllDebrid (non officiel)",
+    "catalogs": [],
     "resources": ["stream"],
     "types": ["movie"],
     "idPrefixes": ["tt"],
