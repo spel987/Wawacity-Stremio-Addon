@@ -5,12 +5,14 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, RedirectResponse, HTMLResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from urllib.parse import unquote, quote_plus
-from typing import Optional, Dict, Tuple
+from urllib.parse import quote_plus
+from typing import Optional, Dict
 from os import environ
 from httpx import AsyncClient
 from asyncio import get_event_loop, get_running_loop, sleep
 from search import search_movie
+import base64
+import json
 
 app = FastAPI()
 
@@ -23,9 +25,7 @@ app.add_middleware(
 )
 
 PORT = int(environ.get("PORT", "7000"))
-
-BASE_URL = environ.get("ADDON_BASE_URL", f"http://localhost:{PORT}")
-
+PROXY_URL = environ.get("PROXY_URL")
 
 app.mount("/static", StaticFiles(directory="public"), name="public")
 
@@ -44,53 +44,54 @@ ADDON_MANIFEST = {
     "background": "https://i.imgur.com/eQRsbJx.jpeg"
 }
 
-def parse_config_segment(config: str) -> Dict[str, str]:
-    params: Dict[str, str] = {}
-    if not config:
-        return params
-    for part in config.split('|'):
-        if not part:
-            continue
-        if '=' in part:
-            k, v = part.split('=', 1)
-            params[unquote(k)] = unquote(v)
-    return params
+def parse_config_base64(config_base64: str) -> Dict[str, str]:
+    """Decode base64 config and return dictionary with keys."""
+    try:
+        decoded_json = base64.b64decode(config_base64).decode('utf-8')
+        config_dict = json.loads(decoded_json)
+        return config_dict
+    except Exception as e:
+        print(f"[ERROR] Failed to decode base64 config: {e}")
+        return {}
 
-def get_key_from_request(request: Request, config: str, key_name: str) -> str:
-    qp = request.query_params
-    key = qp.get(key_name)
-    if (not key) and config:
-        d = parse_config_segment(config)
-        key = d.get(key_name)
-    return key
+def get_key_from_config(config_base64: str, key_name: str) -> str:
+    """Extract key from base64 encoded config."""
+    if not config_base64:
+        return ""
+    config_dict = parse_config_base64(config_base64)
+    return config_dict.get(key_name, "")
 
-@app.get("/", response_class=HTMLResponse)
-async def root(request: Request):
+@app.get("/")
+async def root():
+    return RedirectResponse("/configure")
+
+@app.get("/configure", response_class=HTMLResponse)
+async def configure():
     return FileResponse("public/index.html")
 
-@app.get("/{config}/configure", response_class=HTMLResponse)
-async def configure_addon(request: Request, config: str):
-    return FileResponse("public/configure.html")
+@app.get("/{b64config}/configure", response_class=HTMLResponse)
+async def configure_addon(request: Request, b64config: str):
+    return FileResponse("public/index.html")
 
 # --- Manifest route ---
-@app.get("/{config}/manifest.json")
-async def get_manifest_with_config(config: str):
+@app.get("/{b64config}/manifest.json")
+async def get_manifest_with_config(b64config: str):
     return JSONResponse(content=ADDON_MANIFEST)
 
 
 # --- Stream routes ---
-@app.get("/{config}/stream/{content_type}/{content_id}")
-async def get_streams_with_config(request: Request, config: str, content_type: str, content_id: str):
-    return await handle_streams(request, content_type, content_id, config=config)
+@app.get("/{b64config}/stream/{content_type}/{content_id}")
+async def get_streams_with_config(request: Request, b64config: str, content_type: str, content_id: str):
+    return await handle_streams(request, content_type, content_id, b64config=b64config)
 
 
 # --- Handle streams ---
-async def handle_streams(request: Request, content_type: str, content_id: str, config: Optional[str]):
+async def handle_streams(request: Request, content_type: str, content_id: str, b64config: Optional[str]):
     content_id_formatted = content_id.replace(".json", "")
     print(f"[DEBUG] Search for streams: {content_type}/{content_id_formatted}")
 
-    ad_key = get_key_from_request(request, config, "alldebrid")
-    tmdb_key = get_key_from_request(request, config, "tmdb")
+    ad_key = get_key_from_config(b64config, "alldebrid")
+    tmdb_key = get_key_from_config(b64config, "tmdb")
 
     metadata = await get_movie_metadata(content_id_formatted, tmdb_key)
     if not metadata:
@@ -118,8 +119,8 @@ async def handle_streams(request: Request, content_type: str, content_id: str, c
 
         base_url = str(request.base_url).rstrip('/')
         q_link = quote_plus(dl_link)
-        q_key = quote_plus(ad_key) if ad_key else ''
-        playback_url = f"{base_url}/resolve?link={q_link}&apikey={q_key}"
+        q_b64config = quote_plus(b64config) if b64config else ''
+        playback_url = f"{base_url}/resolve?link={q_link}&b64config={q_b64config}"
 
         streams.append({
             "name": f"[Wawacity 🌇] {quality}",
@@ -139,7 +140,8 @@ async def get_movie_metadata(imdb_id: str, tmdb_key: str) -> Optional[dict]:
         "Content-Type": "application/json",
     }
     try:
-        async with AsyncClient() as client:
+        proxy_config = {"proxy": PROXY_URL} if PROXY_URL else {}
+        async with AsyncClient(**proxy_config) as client:
             response = await client.get(url, headers=headers, timeout=10)
             data = response.json()
         
@@ -170,7 +172,8 @@ async def call_search_script(title: str, year: str = None) -> list:
 
 # --- AllDebrid resolution ---
 @app.get("/resolve")
-async def resolve(link: str, apikey: str):
+async def resolve(link: str, b64config: str):
+    apikey = get_key_from_config(b64config, "alldebrid")
     direct = await convert_to_alldebrid(link, apikey)
     
     if direct and direct != "LINK_DOWN":
@@ -181,14 +184,15 @@ async def resolve(link: str, apikey: str):
         return FileResponse("public/error.mkv")
 
 
-async def convert_to_alldebrid(dl_protect_link: str, apikey: str, max_retries: int = 4) -> Optional[str]:
+async def convert_to_alldebrid(dl_protect_link: str, apikey: str, max_retries: int = 8) -> Optional[str]:
     if not apikey:
         print("[ERROR] No AllDebrid API key provided")
         return None
 
     for attempt in range(max_retries):
         try:
-            async with AsyncClient(timeout=15) as client:
+            proxy_config = {"proxy": PROXY_URL} if PROXY_URL else {}
+            async with AsyncClient(timeout=15, **proxy_config) as client:
                 r1 = await client.get(
                     "https://apislow.alldebrid.com/v4/link/redirector",
                     params={
@@ -259,7 +263,7 @@ async def debug_search(title: str, year: str = None):
     return {"title": title, "year": year, "results": results}
 
 @app.get("/debug/test-alldebrid")
-async def debug_alldebrid(link: str, apikey: str = None):
+async def debug_alldebrid(link: str, apikey: str):
     result = await convert_to_alldebrid(link, apikey=apikey)
     return {"input_link": link, "alldebrid_link": result}
 
