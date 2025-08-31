@@ -31,7 +31,7 @@ app.mount("/static", StaticFiles(directory="public"), name="public")
 
 ADDON_MANIFEST = {
     "id": "wawacity.ad",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "name": "Wawacity AD",
     "description": "Accès au contenu de Wawacity via Stremio & AllDebrid (non officiel)",
     "resources": ["stream"],
