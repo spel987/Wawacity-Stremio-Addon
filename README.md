@@ -22,9 +22,13 @@ services:
     container_name: wawacity-stremio-addon
     ports:
       - "7000:7000"
+    volumes:
+      - ./data:/app/data
     environment:
       - WAWACITY_URL=https://wawacity.diy
       - PORT=7000
+      - DATABASE_TYPE=sqlite
+      - DATABASE_PATH=/app/data/wawacity-addon.db
     restart: unless-stopped
 ```
 
@@ -65,7 +69,7 @@ pip install -r requirements.txt
 ### Étape 3: Lancer l'addon
 
 ```bash
-python Wawacity_AD.py
+python -m wawacity.main
 ```
 
 ### Étape 4: Configuration
@@ -80,11 +84,11 @@ python Wawacity_AD.py
 
 - Stremio appelle `/{b64config}/stream/{type}/{imdb_id}.json`.
 	- `b64config`: clé API AllDebrid & TMDB
-	- `type`: movie
+	- `type`: movie ou series
 	- `imdb_id`: identifiant IMDB
 - L'addon récupère le `title` et `year` via TMDB et `imdb_id`.
-- L'addon lance la recherche à partir de `search.py`.
-- `search.py` scrape Wawacity, ne garde que les liens 1fichier et retourne un JSON comme celui ci:
+- L'addon utilise le système de scrapers avec cache intelligent et verrous distribués.
+- `movie.py` scrape Wawacity pour les films, `series.py` pour les séries, supportent 1fichier, Turbobit et Rapidgator et retournent un JSON comme celui ci:
 
 ```json
 {
@@ -97,7 +101,7 @@ python Wawacity_AD.py
       "quality": "WEB-DL 4K",
       "size": "31.1 Go",
       "dl_protect": "https://dl-protect.link/...",
-      "original_name": "Mission : Impossible – The Final Reckoning [WEB-DL 4K] - MULTI (TRUEFRENCH)"
+      "display_name": "Mission : Impossible – The Final Reckoning [WEB-DL 4K] - MULTI (TRUEFRENCH)"
     },
     {
       "label": "WEBRIP 720p - TRUEFRENCH",
@@ -105,7 +109,7 @@ python Wawacity_AD.py
       "quality": "WEBRIP 720p",
       "size": "4.5 Go",
       "dl_protect": "https://dl-protect.link/...",
-      "original_name": "Mission : Impossible – The Final Reckoning [WEBRIP 720p] - TRUEFRENCH"
+      "display_name": "Mission : Impossible – The Final Reckoning [WEBRIP 720p] - TRUEFRENCH"
     },
     ...
   ]
@@ -118,6 +122,7 @@ python Wawacity_AD.py
 ## 🐛 Debug
 - Test recherche: `http://localhost:7000/debug/test-search?title={TITLE}&year={YEAR}`
 - Test AllDebrid: `http://localhost:7000/debug/test-alldebrid?link={DL_PROTECT_LINK}&apikey={ALLDEBRID_API_KEY}`
+- Health check: `http://localhost:7000/health`
 
 ## ⚠️ Disclaimer
 
