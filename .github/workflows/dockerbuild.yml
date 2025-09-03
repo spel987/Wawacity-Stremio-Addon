@@ -19,7 +19,7 @@ jobs:
     - name: Get version from ADDON_MANIFEST
       id: get-version
       run: |
-        VERSION=$(grep '"version":' Wawacity_AD.py | sed -n 's/.*"version": "\([^"]*\)".*/\1/p')
+        VERSION=$(grep '"version":' wawacity/core/config.py | sed -n 's/.*"version": "\([^"]*\)".*/\1/p')
         echo "Extracted version: $VERSION"
         echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
