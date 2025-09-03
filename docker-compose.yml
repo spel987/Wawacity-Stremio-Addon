@@ -4,7 +4,11 @@ services:
     container_name: wawacity-stremio-addon
     ports:
       - "7000:7000"
+    volumes:
+      - ./data:/app/data
     environment:
       - WAWACITY_URL=https://wawacity.diy
       - PORT=7000
+      - DATABASE_TYPE=sqlite
+      - DATABASE_PATH=/app/data/wawacity-addon.db
     restart: unless-stopped
