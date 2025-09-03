@@ -53,7 +53,7 @@ CLEANUP_INTERVAL = 60  # 60 seconds cleanup cycle
 ADDON_MANIFEST = {
     "id": ADDON_ID,
     "name": ADDON_NAME,
-    "version": "2.0.0",
+    "version": "2.0.1",
     "description": "Accès au contenu de Wawacity via Stremio & AllDebrid (non officiel)",
     "catalogs": [],
     "resources": ["stream"],
