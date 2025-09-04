@@ -1,4 +1,4 @@
-## ⚠️ Ce repository est archivé. Pour continuer de suivre les mises à jour, rendez-vous sur le fork de Dydhzo: https://github.com/Dydhzo/Wawacity-Stremio-Addon
+## ⚠️ Ce repository est archivé. Pour continuer de suivre les mises à jour, rendez-vous sur le fork de Dydhzo: https://github.com/Dydhzo/wastream
 
 # <img src="https://i.imgur.com/R9kh7bC.png" width="30"/> Wawacity Stremio Addon
 
