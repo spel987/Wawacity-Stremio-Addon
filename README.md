@@ -1,3 +1,5 @@
+## ⚠️ Ce repository est archivé. Pour continuer de suivre les mises à jour, rendez-vous sur le fork de Dydhzo: https://github.com/Dydhzo/Wawacity-Stremio-Addon
+
 # <img src="https://i.imgur.com/R9kh7bC.png" width="30"/> Wawacity Stremio Addon
 
 Addon Stremio qui cherche sur Wawacity, convertit en liens directs via AllDebrid et permet la lecture des fichiers. Toutes les qualités, langues et tailles disponibles sont retournées comme sources Stremio distinctes.
